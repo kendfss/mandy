@@ -798,7 +798,7 @@ func (c Command) HelpWorthy() bool {
 func (c Command) HelpNeeded() bool {
 	_, defined := c.formal[HelpName]
 	// but.Must(defined, "help flag %q is undefined for this command", HelpName)
-	println("defined", defined)
+	// println("defined", defined)
 	but.MustBool(defined, errUndefinedHelp.Fmt(HelpName))
 
 	_, used := c.actual[HelpName]
