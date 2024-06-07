@@ -543,6 +543,7 @@ func (c *Command) parseOne() (*Command, bool, error) {
 		}
 		return nil, true, nil
 	}
+	c.args = append([]string{arg}, c.args...)
 	return nil, false, nil
 }
 
@@ -582,7 +583,6 @@ func (c *Command) HelpIf(b bool, fmtArgs ...any) {
 // include the command name. Must be called after all flags in the Command
 // are defined and before flags are accessed by the program.
 // The return value will be ErrHelp if -help or -h were set but not defined.
-// func (c *Command) Parse(arguments []string) error {
 func (c *Command) Parse(args ...string) error {
 	defer c.setparsed()
 	switch {
@@ -780,10 +780,10 @@ func (c Command) HelpWorthy() bool {
 
 	_, used := c.actual[HelpName]
 
-	noFlags := c.NFlag() == 0
-	noArgs := c.NArg() == 0
+	nFlags := c.NFlag() == 0
+	nArgs := c.NArg() == 0
 
-	return c.Parsed() && (used || (noFlags && noArgs && !c.Receiving()))
+	return c.Parsed() && (used || (nFlags && nArgs && !c.Receiving()))
 }
 
 // Similar to HelpNeeded but does not check if flags or args have been set
@@ -797,8 +797,6 @@ func (c Command) HelpWorthy() bool {
 //	herein lies a panic that will trigger if you unset the default help flag
 func (c Command) HelpNeeded() bool {
 	_, defined := c.formal[HelpName]
-	// but.Must(defined, "help flag %q is undefined for this command", HelpName)
-	// println("defined", defined)
 	but.MustBool(defined, errUndefinedHelp.Fmt(HelpName))
 
 	_, used := c.actual[HelpName]
